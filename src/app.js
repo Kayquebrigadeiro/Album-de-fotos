@@ -8,81 +8,112 @@ const PHOTOS_PER_PAGE = 8
 
 export function App() {
   const container = document.createElement('div')
-  container.className = 'min-h-screen py-8 px-4 bg-amber-50 flex justify-center'
+  container.className = 'min-h-screen'
 
   container.innerHTML = `
-    <div class="max-w-6xl w-full">
-      <header class="text-center mb-6">
-        <h1 class="text-4xl font-semibold">Meu Álbum</h1>
-        <p class="text-sm text-gray-600">Toque nas fotos para ver em detalhe — as imagens ficam salvas localmente</p>
+    <div class="app-container">
+      <!-- Header fixo -->
+      <header class="app-header">
+        <div class="header-content">
+          <div class="logo">
+            <span class="logo-icon">📸</span>
+            <h1>Meu Álbum</h1>
+          </div>
+          <div class="header-actions">
+            <button id="toggleUpload" class="btn-icon" title="Adicionar foto">
+              <span>➕</span>
+            </button>
+            <button id="exportBtn" class="btn-icon" title="Exportar">
+              <span>📥</span>
+            </button>
+            <button id="toggleNotes" class="btn-icon" title="Notas">
+              <span>📝</span>
+            </button>
+            <button id="clearBtn" class="btn-icon btn-danger" title="Limpar tudo">
+              <span>🗑️</span>
+            </button>
+          </div>
+        </div>
       </header>
 
-      <section class="album-frame mb-6">
-        <div class="album-top-controls">
-          <form id="uploadForm" class="flex flex-wrap gap-2 items-end w-full">
-            <div>
-              <label class="block text-sm font-medium mb-1">Imagem</label>
-              <input type="file" id="fileInput" accept="image/*" class="block" />
+      <!-- Painel de upload (oculto por padrão) -->
+      <div id="uploadPanel" class="upload-panel hidden">
+        <div class="upload-content">
+          <button id="closeUpload" class="close-btn">×</button>
+          <h2>📷 Adicionar Nova Foto</h2>
+          <form id="uploadForm" class="upload-form">
+            <div class="file-upload-area">
+              <input type="file" id="fileInput" accept="image/*" hidden />
+              <label for="fileInput" class="file-upload-label">
+                <span class="upload-icon">🖼️</span>
+                <span>Clique ou arraste uma foto</span>
+              </label>
+              <div id="preview" class="preview-area hidden"></div>
             </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Título</label>
-              <input id="title" class="border rounded p-2" placeholder="Ex: Natal 2024" />
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label>🏷️ Título</label>
+                <input id="title" type="text" placeholder="Ex: Natal 2024" />
+              </div>
+              
+              <div class="form-group">
+                <label>📅 Data</label>
+                <input id="date" type="date" />
+              </div>
+              
+              <div class="form-group full-width">
+                <label>🏷 Tags</label>
+                <input id="tags" type="text" placeholder="natal, familia, viagem" />
+              </div>
+              
+              <div class="form-group full-width">
+                <label>📝 Descrição</label>
+                <textarea id="desc" rows="3" placeholder="Conte a história desta foto..."></textarea>
+              </div>
+              
+              <div class="form-group full-width">
+                <label class="checkbox-label">
+                  <input id="special" type="checkbox" />
+                  <span>⭐ Marcar como ocasião especial</span>
+                </label>
+              </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Data</label>
-              <input id="date" type="date" class="border rounded p-2" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Tags</label>
-              <input id="tags" class="border rounded p-2" placeholder="natal, familia" />
-            </div>
-
-            <div class="w-full sm:w-auto">
-              <label class="block text-sm font-medium mb-1">Descrição (opcional)</label>
-              <input id="desc" class="border rounded p-2 w-full" placeholder="Breve descrição / nota" />
-            </div>
-
-            <div class="flex items-center gap-2 ml-2">
-              <input id="special" type="checkbox" class="h-4 w-4" />
-              <label for="special" class="text-sm">Ocasião especial?</label>
-            </div>
-
-            <div class="ml-auto flex gap-2">
-              <button id="uploadBtn" class="btn-primary">💾 Salvar</button>
-              <button id="clearBtn" class="btn-secondary">🗑️ Limpar</button>
-              <button id="exportBtn" class="btn-accent">📥 Exportar</button>
-              <input id="importFile" type="file" accept="application/json" class="ml-2 inline-block" />
-              <button id="toggleNotes" title="Mostrar / esconder notas" class="btn-page ml-2">📝 Notas</button>
+            
+            <div class="form-actions">
+              <button type="button" id="cancelBtn" class="btn-secondary">Cancelar</button>
+              <button type="submit" id="uploadBtn" class="btn-primary">💾 Salvar Foto</button>
             </div>
           </form>
-        </div>
-
-        <div class="flip-wrapper relative">
-          <div class="flip-container">
-            <div class="page front">
-              <div id="gallery-front" class="album-grid"></div>
-            </div>
-            <div class="page back">
-              <div id="gallery-back" class="album-grid"></div>
-            </div>
+          
+          <div class="import-section">
+            <label for="importFile" class="import-label">
+              📂 Importar álbum (JSON)
+            </label>
+            <input id="importFile" type="file" accept="application/json" />
           </div>
         </div>
+      </div>
 
-        <div class="mt-4 flex justify-between items-center">
-          <div class="text-sm text-gray-500">Dica: clique nas fotos para abrir em tamanho real</div>
-          <div class="page-controls">
-            <button id="prevBtn" class="btn-page">◀ Anterior</button>
-            <div class="page-indicator" id="pageIndicator">1 / 1</div>
-            <button id="nextBtn" class="btn-page">Próxima ▶</button>
-          </div>
+      <!-- Grid de fotos (Masonry layout) -->
+      <main class="gallery-container">
+        <div id="gallery" class="masonry-grid"></div>
+        
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">🖼️</div>
+          <h2>Seu álbum está vazio</h2>
+          <p>Comece adicionando suas primeiras memórias!</p>
+          <button id="addFirstPhoto" class="btn-primary">➕ Adicionar Foto</button>
         </div>
-      </section>
+      </main>
 
-      <footer class="text-center text-sm text-gray-500">
-        <small>Álbum estático — exporte para salvar em outros dispositivos</small>
-      </footer>
-
+      <!-- Modal de visualização -->
       <div id="modalRoot"></div>
+      
+      <!-- Loading -->
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+      </div>
     </div>
   `
 
@@ -93,16 +124,18 @@ export function App() {
   const exportBtn = container.querySelector('#exportBtn')
   const importFile = container.querySelector('#importFile')
   const toggleNotesBtn = container.querySelector('#toggleNotes')
-  const galleryFront = container.querySelector('#gallery-front')
-  const galleryBack = container.querySelector('#gallery-back')
-  const albumFrame = container.querySelector('.album-frame')
-  const flipContainer = container.querySelector('.flip-container')
-  const prevBtn = container.querySelector('#prevBtn')
-  const nextBtn = container.querySelector('#nextBtn')
-  const pageIndicator = container.querySelector('#pageIndicator')
+  const toggleUploadBtn = container.querySelector('#toggleUpload')
+  const closeUploadBtn = container.querySelector('#closeUpload')
+  const cancelBtn = container.querySelector('#cancelBtn')
+  const addFirstPhotoBtn = container.querySelector('#addFirstPhoto')
+  const uploadPanel = container.querySelector('#uploadPanel')
+  const gallery = container.querySelector('#gallery')
+  const emptyState = container.querySelector('#emptyState')
   const modalRoot = container.querySelector('#modalRoot')
+  const preview = container.querySelector('#preview')
+  const loading = container.querySelector('#loading')
 
-  // inputs adicionais
+  // inputs
   const titleInput = container.querySelector('#title')
   const dateInput = container.querySelector('#date')
   const tagsInput = container.querySelector('#tags')
@@ -111,112 +144,77 @@ export function App() {
 
   // estado
   let photosAll = []
-  let currentPage = 0
-  let totalPages = 1
   let notesVisible = true
-  let frontIsCurrent = true // indica se front tem a página atual
+  let selectedFile = null
 
   async function refreshGallery() {
+    loading.classList.remove('hidden')
     photosAll = await dbGetAllPhotos()
     photosAll.sort((a,b) => (b.date || '').localeCompare(a.date || ''))
-    totalPages = Math.max(1, Math.ceil(photosAll.length / PHOTOS_PER_PAGE))
-    currentPage = Math.min(currentPage, totalPages - 1)
-    pageIndicator.textContent = `${currentPage + 1} / ${totalPages}`
-
-    // preenche front ou back dependendo de frontIsCurrent
-    const pageHtml = buildPagePhotos(currentPage)
-    if (frontIsCurrent) {
-      galleryFront.innerHTML = ''
-      galleryFront.append(...pageHtml)
+    
+    gallery.innerHTML = ''
+    
+    if (photosAll.length === 0) {
+      emptyState.classList.remove('hidden')
+      gallery.classList.add('hidden')
     } else {
-      galleryBack.innerHTML = ''
-      galleryBack.append(...pageHtml)
-    }
-  }
-
-  function buildPagePhotos(pageIndex) {
-    const elements = []
-    const start = pageIndex * PHOTOS_PER_PAGE
-    const slice = photosAll.slice(start, start + PHOTOS_PER_PAGE)
-    slice.forEach(p => {
-      const card = document.createElement('article')
-      const angle = (Math.random() * 8) - 4
-      card.className = 'polaroid'
-      card.style.setProperty('--angle', `${angle}deg`)
-
-      // montar notas e fitas
-      const noteHtml = (notesVisible && p.description) ? `<div class="sticky-note">${escapeHtml(shortText(p.description, 90))}</div>` : ''
-      const ribbonHtml = p.special ? `<div class="ribbon">Especial</div>` : `<div class="ribbon">Memória</div>`
-
-      card.innerHTML = `
-        ${p.special ? '<div class="special-badge">Ocasião</div>' : ''}
-        ${ribbonHtml}
-        <a href="#" class="block photo-link">
-          <div class="photo-frame">
-            <img src="${p.thumb}" alt="${escapeHtml(p.title || '')}" />
-          </div>
-        </a>
-        <div class="caption">
-          <strong>${escapeHtml(p.title || p.date || '')}</strong>
-          <div class="meta">${escapeHtml(p.date || '')} ${p.tags?.length ? ' • ' + escapeHtml(p.tags.join(', ')) : ''}</div>
-        </div>
-        ${noteHtml}
-      `
-      // abrir modal ao clicar
-      card.querySelector('.photo-link').addEventListener('click', (e) => {
-        e.preventDefault()
-        openModal(p)
+      emptyState.classList.add('hidden')
+      gallery.classList.remove('hidden')
+      
+      photosAll.forEach((p, index) => {
+        const card = createPhotoCard(p, index)
+        gallery.appendChild(card)
       })
-      elements.push(card)
-    })
-    // se houver menos que PHOTOS_PER_PAGE, preencher com espaços vazios para visual consistente
-    const missing = PHOTOS_PER_PAGE - slice.length
-    for (let i=0;i<missing;i++){
-      const placeholder = document.createElement('div')
-      placeholder.className = ''
-      elements.push(placeholder)
     }
-    return elements
+    
+    loading.classList.add('hidden')
   }
 
-  // trocar para nova página com animação de virar
-  async function changePage(toPage) {
-    if (toPage < 0 || toPage >= totalPages || toPage === currentPage) return
-    const nextPage = toPage
-    // preparar a face oposta com o conteúdo da próxima página
-    frontIsCurrent = !frontIsCurrent
-    const targetGallery = frontIsCurrent ? galleryFront : galleryBack
-    targetGallery.innerHTML = ''
-    targetGallery.append(...buildPagePhotos(nextPage))
-
-    // iniciar animação: adicionar classe 'is-flipping' na album-frame
-    albumFrame.classList.add('is-flipping')
-    // aguardar término da transição (use timeout seguro)
-    await waitMs(750)
-
-    // animação concluída: atualizar estado e remover classe
-    currentPage = nextPage
-    pageIndicator.textContent = `${currentPage + 1} / ${totalPages}`
-    albumFrame.classList.remove('is-flipping')
-    // frontIsCurrent já invertido no início da função
-  }
-
-  function waitMs(ms) {
-    return new Promise(res => setTimeout(res, ms))
+  function createPhotoCard(photo, index) {
+    const card = document.createElement('div')
+    card.className = 'photo-card'
+    card.style.animationDelay = `${index * 0.05}s`
+    
+    const noteHtml = (notesVisible && photo.description) 
+      ? `<div class="photo-note">${escapeHtml(photo.description)}</div>` 
+      : ''
+    
+    card.innerHTML = `
+      ${photo.special ? '<div class="special-badge">⭐ Especial</div>' : ''}
+      <div class="photo-image">
+        <img src="${photo.thumb}" alt="${escapeHtml(photo.title || '')}" loading="lazy" />
+        <div class="photo-overlay">
+          <button class="view-btn" data-id="${photo.id}">🔍 Ver</button>
+        </div>
+      </div>
+      <div class="photo-info">
+        <h3>${escapeHtml(photo.title || 'Sem título')}</h3>
+        <p class="photo-date">📅 ${escapeHtml(photo.date || '')}</p>
+        ${photo.tags?.length ? `<div class="photo-tags">${photo.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        ${noteHtml}
+      </div>
+    `
+    
+    card.querySelector('.view-btn').addEventListener('click', () => openModal(photo))
+    card.querySelector('.photo-image').addEventListener('click', () => openModal(photo))
+    
+    return card
   }
 
   function openModal(photo) {
     modalRoot.innerHTML = `
-      <div id="overlay" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-        <div class="bg-white max-w-3xl w-full p-4 rounded shadow-lg">
-          <div class="flex justify-between items-start">
-            <h3 class="text-lg font-semibold">${escapeHtml(photo.title || photo.date)}</h3>
-            <button id="closeModal" class="text-gray-600">Fechar ✕</button>
+      <div id="overlay" class="modal-overlay">
+        <div class="modal-content">
+          <button id="closeModal" class="modal-close">×</button>
+          <div class="modal-image">
+            <img src="${photo.data}" alt="${escapeHtml(photo.title || '')}" />
           </div>
-          <div class="mt-4">
-            <img src="${photo.data}" alt="${escapeHtml(photo.title || '')}" class="w-full rounded" />
-            <p class="text-sm text-gray-600 mt-2">${escapeHtml(photo.description || '')}</p>
-            <p class="text-xs text-gray-500 mt-2">Data: ${escapeHtml(photo.date || '')} ${photo.tags?.length ? ' • Tags: ' + escapeHtml(photo.tags.join(', ') ) : ''}</p>
+          <div class="modal-info">
+            <h2>${escapeHtml(photo.title || 'Sem título')}</h2>
+            ${photo.special ? '<span class="modal-badge">⭐ Ocasião Especial</span>' : ''}
+            <p class="modal-date">📅 ${escapeHtml(photo.date || '')}</p>
+            ${photo.description ? `<p class="modal-desc">${escapeHtml(photo.description)}</p>` : ''}
+            ${photo.tags?.length ? `<div class="modal-tags">${photo.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}</div>` : ''}
           </div>
         </div>
       </div>
@@ -228,20 +226,52 @@ export function App() {
   }
 
   // handlers
+  toggleUploadBtn.addEventListener('click', () => {
+    uploadPanel.classList.remove('hidden')
+  })
+
+  closeUploadBtn.addEventListener('click', () => {
+    uploadPanel.classList.add('hidden')
+    resetForm()
+  })
+
+  cancelBtn.addEventListener('click', () => {
+    uploadPanel.classList.add('hidden')
+    resetForm()
+  })
+
+  addFirstPhotoBtn.addEventListener('click', () => {
+    uploadPanel.classList.remove('hidden')
+  })
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      selectedFile = file
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        preview.innerHTML = `<img src="${e.target.result}" alt="Preview" />`
+        preview.classList.remove('hidden')
+      }
+      reader.readAsDataURL(file)
+    }
+  })
+
   uploadBtn.addEventListener('click', async (e) => {
     e.preventDefault()
-    const file = fileInput.files[0]
-    if (!file) {
-      alert('Escolha uma imagem primeiro')
+    if (!selectedFile) {
+      alert('📷 Escolha uma imagem primeiro')
       return
     }
+    
+    loading.classList.remove('hidden')
     const title = titleInput.value.trim()
     const date = dateInput.value || (new Date()).toISOString().slice(0,10)
     const tags = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean)
     const desc = descInput.value.trim()
     const special = specialInput.checked
 
-    const dataURL = await toDataURL(file)
+    const dataURL = await toDataURL(selectedFile)
     const thumb = await generateThumbnail(dataURL, 800)
     await dbAddPhoto({
       data: dataURL,
@@ -251,23 +281,30 @@ export function App() {
       tags,
       description: desc,
       special: special ? true : false,
-      filename: file.name
+      filename: selectedFile.name
     })
 
-    // limpa form
+    resetForm()
+    uploadPanel.classList.add('hidden')
+    await refreshGallery()
+  })
+
+  function resetForm() {
     fileInput.value = ''
     titleInput.value = ''
     dateInput.value = ''
     tagsInput.value = ''
     descInput.value = ''
     specialInput.checked = false
-
-    await refreshGallery()
-  })
+    selectedFile = null
+    preview.innerHTML = ''
+    preview.classList.add('hidden')
+  }
 
   clearBtn.addEventListener('click', async (e) => {
     e.preventDefault()
-    if (!confirm('Apagar todas as fotos salvas localmente?')) return
+    if (!confirm('🗑️ Apagar todas as fotos salvas localmente?')) return
+    loading.classList.remove('hidden')
     await dbClearAll()
     await refreshGallery()
   })
@@ -290,18 +327,19 @@ export function App() {
     const f = e.target.files[0]
     if (!f) return
     try {
+      loading.classList.remove('hidden')
       const text = await f.text()
       const parsed = JSON.parse(text)
       if (!parsed.photos || !Array.isArray(parsed.photos)) {
-        alert('Arquivo inválido')
+        alert('❌ Arquivo inválido')
         return
       }
       await dbBulkAdd(parsed.photos)
       await refreshGallery()
-      alert('Importação concluída')
+      alert('✅ Importação concluída!')
     } catch (err) {
       console.error(err)
-      alert('Erro ao importar: ' + err.message)
+      alert('❌ Erro ao importar: ' + err.message)
     } finally {
       importFile.value = ''
     }
@@ -310,18 +348,8 @@ export function App() {
   toggleNotesBtn.addEventListener('click', async (e) => {
     e.preventDefault()
     notesVisible = !notesVisible
+    toggleNotesBtn.classList.toggle('active')
     await refreshGallery()
-  })
-
-  prevBtn.addEventListener('click', (e) => {
-    e.preventDefault()
-    const target = Math.max(0, currentPage - 1)
-    changePage(target)
-  })
-  nextBtn.addEventListener('click', (e) => {
-    e.preventDefault()
-    const target = Math.min(totalPages - 1, currentPage + 1)
-    changePage(target)
   })
 
   // util: file -> dataURL
@@ -334,17 +362,12 @@ export function App() {
     })
   }
 
-  // util: escape e utilidades
   function escapeHtml(str){
     return String(str || '').replace(/[&<>"'`=\/]/g, function(s) {
       return ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'
       })[s]
     })
-  }
-  function shortText(s, n) {
-    if (!s) return ''
-    return s.length > n ? s.slice(0, n-1) + '…' : s
   }
 
   // init
