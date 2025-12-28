@@ -48,11 +48,11 @@ export function App() {
             </div>
 
             <div class="ml-auto flex gap-2">
-              <button id="uploadBtn" class="bg-amber-600 text-white px-4 py-2 rounded">Salvar</button>
-              <button id="clearBtn" class="bg-gray-200 px-3 py-2 rounded">Limpar</button>
-              <button id="exportBtn" class="bg-blue-600 text-white px-3 py-2 rounded">Exportar</button>
+              <button id="uploadBtn" class="btn-primary">💾 Salvar</button>
+              <button id="clearBtn" class="btn-secondary">🗑️ Limpar</button>
+              <button id="exportBtn" class="btn-accent">📥 Exportar</button>
               <input id="importFile" type="file" accept="application/json" class="ml-2 inline-block" />
-              <button id="toggleNotes" title="Mostrar / esconder notas" class="btn-page ml-2">Notas</button>
+              <button id="toggleNotes" title="Mostrar / esconder notas" class="btn-page ml-2">📝 Notas</button>
             </div>
           </form>
         </div>

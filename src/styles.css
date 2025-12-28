@@ -7,32 +7,72 @@
 :root {
   --paper-bg: #fbf8f2;
   --accent: #b87a2e;
+  --gold: #d4af37;
+  --rose: #ff6b9d;
 }
 
 /* Corpo e fonte do título */
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: radial-gradient(circle at 10% 10%, #fffaf7 0%, var(--paper-bg) 30%, #f2ece4 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   color: #1f2937;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  min-height: 100vh;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* título do álbum (mais elegante) */
 header h1 {
   font-family: "Playfair Display", serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  animation: titleFloat 3s ease-in-out infinite;
+}
+
+@keyframes titleFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+header p {
+  color: #f8fafc;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 /* área que simula uma página de álbum com espaço para animação */
 .album-frame {
-  background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(250,250,250,0.97));
+  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(250,250,250,0.92));
   padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 18px 50px rgba(20,20,20,0.08);
-  border: 1px solid rgba(0,0,0,0.035);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.15),
+    0 0 0 1px rgba(255,255,255,0.5) inset,
+    0 0 100px rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(255,255,255,0.3);
   position: relative;
-  perspective: 1400px; /* necessário para 3D flip */
+  perspective: 1400px;
   overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.album-frame:hover {
+  box-shadow: 
+    0 25px 80px rgba(0,0,0,0.2),
+    0 0 0 1px rgba(255,255,255,0.6) inset,
+    0 0 120px rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
 }
 
 /* container interno com duas faces para animação de virar página */
@@ -127,32 +167,59 @@ header h1 {
 
 /* Cartão polaroid */
 .polaroid {
-  background: #fff;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
   padding: 0.8rem 0.8rem 1.05rem;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(20,20,20,0.12);
+  border-radius: 12px;
+  box-shadow: 
+    0 10px 30px rgba(20,20,20,0.15),
+    0 0 0 1px rgba(255,255,255,0.8) inset;
   display: block;
   width: 100%;
   transform: rotate(var(--angle, 0deg));
-  transition: transform .18s ease, box-shadow .18s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(255,255,255,0.5);
   min-height: 320px;
+  overflow: hidden;
+}
+
+.polaroid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: 12px;
 }
 
 /* efeito hover leve */
 .polaroid:hover {
-  transform: translateY(-10px) rotate(calc(var(--angle, 0deg) - 1deg));
-  box-shadow: 0 22px 56px rgba(20,20,20,0.18);
+  transform: translateY(-12px) rotate(calc(var(--angle, 0deg) - 1deg)) scale(1.02);
+  box-shadow: 
+    0 25px 60px rgba(20,20,20,0.25),
+    0 0 0 1px rgba(255,255,255,0.9) inset,
+    0 0 40px rgba(102, 126, 234, 0.3);
+}
+
+.polaroid:hover::before {
+  opacity: 1;
 }
 
 /* moldura da imagem */
 .polaroid .photo-frame {
   background: #fff;
   padding: 0.35rem;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 12px solid #fff;
-  box-shadow: inset 0 -6px 12px rgba(0,0,0,0.02);
+  box-shadow: 
+    inset 0 -6px 12px rgba(0,0,0,0.02),
+    0 4px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
 }
 
 /* imagem */
@@ -161,7 +228,12 @@ header h1 {
   width: 100%;
   height: 220px;
   object-fit: cover;
-  border-radius: 3px;
+  border-radius: 6px;
+  transition: transform 0.3s ease;
+}
+
+.polaroid:hover img {
+  transform: scale(1.05);
 }
 
 /* legenda */
@@ -184,15 +256,23 @@ header h1 {
   position: absolute;
   left: 8px;
   top: -10px;
-  background: linear-gradient(180deg,#ef4444,#dc2626);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff4757 100%);
   color: white;
-  padding: 0.22rem 0.5rem;
-  font-size: 0.68rem;
-  border-radius: 6px;
-  box-shadow: 0 6px 16px rgba(220,38,38,0.18);
+  padding: 0.3rem 0.6rem;
+  font-size: 0.7rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
   transform: rotate(-6deg);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+  z-index: 10;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: rotate(-6deg) scale(1); }
+  50% { transform: rotate(-6deg) scale(1.05); }
 }
 
 /* fita decorativa (top-right) */
@@ -201,18 +281,19 @@ header h1 {
   right: -12px;
   top: 12px;
   width: 80px;
-  height: 22px;
-  background: linear-gradient(90deg,#ffd166,#f59e0b);
+  height: 24px;
+  background: linear-gradient(135deg, #ffd166 0%, #f59e0b 100%);
   color: #2b2b2b;
-  font-size: 0.68rem;
-  font-weight: 600;
-  border-radius: 3px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
   transform: rotate(18deg);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
+  z-index: 5;
 }
 
 /* nota manuscrita (sticky note) */
@@ -221,16 +302,18 @@ header h1 {
   right: 8px;
   bottom: -10px;
   width: 120px;
-  padding: 8px 8px;
-  background: linear-gradient(180deg,#fff8c6,#fff3a7);
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  padding: 10px;
+  background: linear-gradient(135deg, #fff8c6 0%, #ffe066 100%);
+  border: 1px solid rgba(255, 224, 102, 0.3);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.15);
   transform: rotate(-8deg);
   font-family: "Patrick Hand", "Comic Sans MS", "Segoe Print", sans-serif;
   font-size: 0.85rem;
   color: #2b2b2b;
-  line-height: 1.05;
+  line-height: 1.1;
   pointer-events: none;
+  border-radius: 2px;
+  z-index: 5;
 }
 
 /* pequena 'fita adesiva' sobre a nota */
@@ -238,13 +321,14 @@ header h1 {
   content: "";
   position: absolute;
   left: 50%;
-  top: -8px;
+  top: -10px;
   transform: translateX(-50%) rotate(-8deg);
-  width: 40px;
-  height: 10px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(0,0,0,0.05));
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  width: 45px;
+  height: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   border-radius: 2px;
+  opacity: 0.7;
 }
 
 /* controles de página e estilo */
@@ -256,6 +340,58 @@ header h1 {
   flex-wrap: wrap;
 }
 
+/* Botões estilizados */
+.btn-primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #374151;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
+}
+
 .page-controls {
   margin-left: auto;
   display:flex;
@@ -265,17 +401,36 @@ header h1 {
 
 /* estilo dos botões prev/next */
 .btn-page {
-  background: white;
-  border: 1px solid rgba(0,0,0,0.06);
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
-.btn-page:active { transform: translateY(1px); }
+
+.btn-page:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+}
+
+.btn-page:active { 
+  transform: translateY(0px); 
+}
 
 /* pequeno indicador de página */
-.page-indicator { font-size: 0.9rem; color:#6b7280; }
+.page-indicator { 
+  font-size: 0.95rem; 
+  color: #4b5563;
+  font-weight: 600;
+  background: rgba(255,255,255,0.8);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
 
 /* modal overlay adjustments */
 #overlay { z-index: 60; }
