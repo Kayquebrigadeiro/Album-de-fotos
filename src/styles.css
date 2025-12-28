@@ -74,7 +74,55 @@ header h1 {
   .album-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
 }
 @media (max-width: 768px){
-  .album-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .album-grid { 
+    grid-template-columns: repeat(2, minmax(0,1fr)); 
+    gap: 1rem;
+  }
+  
+  /* Formulário compacto no mobile */
+  .album-top-controls form {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .album-top-controls form > div {
+    width: 100% !important;
+  }
+  
+  .album-top-controls input[type="text"],
+  .album-top-controls input[type="date"],
+  .album-top-controls input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 16px; /* Evita zoom no iOS */
+  }
+  
+  /* Botões maiores para toque */
+  .album-top-controls button {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    min-height: 44px; /* Tamanho mínimo recomendado para toque */
+  }
+  
+  .btn-page {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    min-height: 44px;
+  }
+  
+  /* Espaçamento melhor para dedos */
+  .page-controls {
+    gap: 1rem;
+  }
+  
+  /* Polaroids maiores no mobile */
+  .polaroid {
+    min-height: 280px;
+  }
+  
+  .polaroid img {
+    height: 180px;
+  }
 }
 
 /* Cartão polaroid */
@@ -235,6 +283,26 @@ header h1 {
 
 /* Mobile: desativa a animação 3D em dispositivos lentos */
 @media (max-width: 640px) {
-  .album-frame { perspective: none; }
+  .album-frame { 
+    perspective: none;
+    padding: 1.5rem;
+  }
   .album-frame.is-flipping .flip-container { transform: none; }
+  
+  /* Ajustes adicionais para telas muito pequenas */
+  .album-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  /* Modal responsivo */
+  #overlay .bg-white {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+  
+  /* Título menor */
+  header h1 {
+    font-size: 2rem;
+  }
 }
